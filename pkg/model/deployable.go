@@ -1,5 +1,10 @@
 package model
 
+import (
+	"regexp"
+	"strings"
+)
+
 type Deployable struct {
 	Kind               string               `json:"kind"`
 	Namespace          string               `json:"namespace"`
@@ -17,6 +22,7 @@ type Deployable struct {
 	Resources          *Resources           `json:"resources"`
 	SecurityContext    *SecurityContextSpec `json:"securityContext"`
 	Ingress            *IngressSpec         `json:"ingress"`
+	Mounts             []MountSpec          `json:"mounts"`
 }
 
 func (d *Deployable) Ports() []PortType {
@@ -44,6 +50,22 @@ type Metadata struct {
 type ArtifactInfo struct {
 	Name  string `json:"name,omitempty"`
 	Image string `json:"image,omitempty"`
+}
+
+var semVerVersion = regexp.MustCompile("^v?([0-9]+\\.[0-9]+\\.[0-9]+)$")
+
+func (ai *ArtifactInfo) Version() string {
+	if ai.Image == "" {
+		return ""
+	}
+	parts := strings.Split(ai.Image, ":")
+	if len(parts) < 2 {
+		return ""
+	}
+	if semVerVersion.MatchString(parts[1]) {
+		return semVerVersion.FindStringSubmatch(parts[1])[1]
+	}
+	return "1.0.0"
 }
 
 type ReleaseInfo struct {
@@ -91,4 +113,10 @@ type Resources struct {
 type ResourceValue struct {
 	Cpu    *string `json:"cpu"`
 	Memory *string `json:"memory"`
+}
+
+type MountSpec struct {
+	Name string `json:"name"`
+	Path string `json:"path"`
+	Type string `json:"type"`
 }

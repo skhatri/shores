@@ -9,9 +9,9 @@ import (
 )
 
 var ChartTemplate = `apiVersion: v1
-description: A Helm chart for Kubernetes {{ .Release.Name }}
-name: {{ .Release.Name }}
-version: {{ .Release.Version }}
+description: A Helm chart for Kubernetes {{ .Artifact.Name }}
+name: {{ .Artifact.Name }}
+version: {{ .Artifact.Version }}
 
 `
 
@@ -60,10 +60,10 @@ kind: Deployment
 metadata:
   name: {{ .Artifact.Name | ToLower }}
   namespace: {{ .Namespace }}
-  {{ if .Metadata.Annotations }}annotations: 
+  {{ if .Metadata.Annotations }}annotations:
 {{ range $key, $value := .Metadata.Annotations }}{{ $key |indent 4}}: '{{ $value }}'
 {{ end }}{{ end }}
-  {{ if .Metadata.Labels }}labels: 
+  {{ if .Metadata.Labels }}labels:
 {{ range $key, $value := .Metadata.Labels }}{{ $key |indent 4 }}: '{{ $value }}'
 {{ end }}{{ end }}
 spec:
@@ -78,20 +78,18 @@ spec:
 {{ range $key, $value := .Metadata.SelectorLabels }}{{ $key | indent 8 }}: {{ $value }}
 {{ end }}{{ end }}
     spec:
-      {{ if .ServiceAccountName }}serviceAccountName: {{ .ServiceAccountName }}{{end}}
+      serviceAccountName: {{ if .ServiceAccountName }}{{ .ServiceAccountName }}{{else}}{{ .Artifact.Name | ToLower }}{{end}}
       containers:
         - name: {{ .Artifact.Name }}
           image: {{ .Artifact.Image }}
           imagePullPolicy: IfNotPresent
-          {{ if .Runtime.Entrypoint }}command: [{{ range $entry := .Runtime.Entrypoint }}'{{$entry}}', {{ end }}]{{ end }}
-          {{ if .Runtime.Command }}args: [{{ range $cmd := .Runtime.Command }}'{{$cmd}}', {{ end }}]{{ end }}
-
+          {{- if .Runtime.Entrypoint }}command: [{{ range $entry := .Runtime.Entrypoint }}'{{$entry}}', {{ end }}]{{- end }}
+          {{- if .Runtime.Command }}args: [{{ range $cmd := .Runtime.Command }}'{{$cmd}}', {{ end }}]{{- end }}
           {{ if .ServiceEnabled }}ports:{{ range $port := .Ports }}
             - name: {{ $port.Name }}
               containerPort: {{ $port.Port }}
               protocol: {{ $port.Protocol }}
-{{end }}{{ end }}
-         
+{{- end }}{{- end }}
           {{ if .Checks -}}livenessProbe:
             httpGet:
               path: {{ .Checks.Path }}
@@ -104,42 +102,44 @@ spec:
               port: {{ .Checks.Port }}
               initialDelaySeconds: 30
               timeoutSeconds: 100 {{- end }}
-
           {{if .Resources}}resources:
             {{ if .Resources.Requests }}requests:
-              {{ if .Resources.Requests.Cpu }}cpu:  "{{ .Resources.Requests.Cpu }}"{{end}}
-              {{ if .Resources.Requests.Memory}}memory:  "{{ .Resources.Requests.Memory }}"{{end}}
-		    {{ end }}
+              {{ if .Resources.Requests.Cpu }}cpu: "{{ .Resources.Requests.Cpu }}"{{end}}
+              {{ if .Resources.Requests.Memory}}memory: "{{ .Resources.Requests.Memory }}"{{end}}
+		    {{- end }}
             {{ if .Resources.Limits }}limits:
               {{ if .Resources.Limits.Cpu }}cpu: "{{ .Resources.Limits.Cpu }}"{{end}}
               {{ if .Resources.Limits.Memory}}memory: "{{ .Resources.Limits.Memory }}"{{end}}
-            {{ end }}
-		  {{ end }}
+            {{- end }}
+		  {{- end }}
           {{ if .Env }}env:{{ range $key, $value := .Env }}
             - name: "{{ $key | ToUpper }}"
               value: "{{ $value }}"{{end}}
-		  {{ end }}
-          volumeMounts:
-            - mountPath: /tmp
-              name: tmp-volume
+		  {{- end }}
+          {{ if .Mounts }}volumeMounts:{{ range $mount := .Mounts }}
+            - name: {{ $mount.Name }}
+              mountPath: {{ $mount.Path }}
+{{- end }}{{- end}}
+
           {{ if .SecurityContext}}securityContext:
             {{ if .SecurityContext.AllowPrivilegeEscalation }}allowPrivilegeEscalation: {{ .SecurityContext.AllowPrivilegeEscalation }}{{ end }}
             {{ if .SecurityContext.ReadOnlyRootFilesystem }}readOnlyRootFilesystem: {{ .SecurityContext.ReadOnlyRootFilesystem}}{{end}}
             {{ if .SecurityContext.RunAsNonRoot }}runAsNonRoot: {{ .SecurityContext.RunAsNonRoot }}{{ end }}
             {{ if .SecurityContext.RunAsUser }}runAsUser: {{ .SecurityContext.RunAsUser }}{{ end }}
-          {{ end }}
+          {{- end }}
       {{ if .SecurityContext}}securityContext:
         {{ if .SecurityContext.RunAsNonRoot }}runAsNonRoot: {{ .SecurityContext.RunAsNonRoot }}{{ end }}
         {{ if .SecurityContext.RunAsUser }}runAsUser: {{ .SecurityContext.RunAsUser }}{{ end }}
-      {{ end }}
+      {{- end }}
       {{ if .Target.NodeSelector }}nodeSelector:
-{{ range $key, $value := .Target.NodeSelector }}{{ $key | indent 8 }} : {{ $value}}
+{{ range $key, $value := .Target.NodeSelector }}{{ $key | indent 8 }}: {{ $value}}
 {{end}}{{end}}
-      affinity: {}
-      tolerations: []
-      volumes:
-        - name: tmp-volume
-          emptyDir: {}
+      affinity: { }
+      tolerations: [ ]
+      {{ if .Mounts }}volumes:{{ range $mount := .Mounts }}
+        - name: {{ $mount.Name }}
+          {{ if eq $mount.Type "emptyDir" }}emptyDir: { }{{end}}
+{{- end }}{{- end}}
 `
 
 var JobTemplate = `apiVersion: batch/v1

@@ -13,6 +13,7 @@ type AppSpec struct {
 	SecurityContext *SecurityContextSpec `json:"securityContext" yaml:"securityContext"`
 	Mixins          []string             `json:"mixins" yaml:"mixins"`
 	Ingress         *IngressSpec         `json:"ingress" yaml:"ingress"`
+	Mounts          []string             `json:"mounts" yaml:"mounts"`
 }
 
 type Env struct {
@@ -45,9 +46,9 @@ type WorkloadSpec struct {
 
 type SecurityContextSpec struct {
 	RunAsUser                string `json:"runAsUser" yaml:"runAsUser"`
-	AllowPrivilegeEscalation *bool   `json:"allowPrivilegeEscalation" yaml:"allowPrivilegeEscalation"`
-	ReadOnlyRootFilesystem   *bool   `json:"readOnlyRootFilesystem" yaml:"readOnlyRootFilesystem"`
-	RunAsNonRoot             *bool   `json:"runAsNonRoot" yaml:"runAsNonRoot"`
+	AllowPrivilegeEscalation *bool  `json:"allowPrivilegeEscalation" yaml:"allowPrivilegeEscalation"`
+	ReadOnlyRootFilesystem   *bool  `json:"readOnlyRootFilesystem" yaml:"readOnlyRootFilesystem"`
+	RunAsNonRoot             *bool  `json:"runAsNonRoot" yaml:"runAsNonRoot"`
 }
 
 type IngressSpec struct {

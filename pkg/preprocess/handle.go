@@ -229,7 +229,7 @@ func ValidateAppSpec(spec model.AppSpec,
 	updateDeploymentArtifact(&deploymentSpec, releaseSpec)
 	updateLabelsAndAnnotations(&deploymentSpec, releaseSpec, task)
 	updateSecurityContext(&deploymentSpec, spec)
-
+	updateMount(&deploymentSpec, spec)
 	return &deploymentSpec, nil
 }
 
@@ -279,4 +279,34 @@ func updateLabelsAndAnnotations(deploymentSpec *model.Deployable, releaseSpec mo
 		SelectorLabels: selectorLabels,
 	}
 
+}
+
+func updateMount(deployable *model.Deployable, appSpec model.AppSpec) {
+	mounts := make([]model.MountSpec, 0)
+	if len(appSpec.Mounts) == 0 {
+		mounts = append(mounts, model.MountSpec{
+			Name: "tmp-volume",
+			Path: "/tmp",
+			Type: "emptyDir",
+		})
+	}
+
+	for _, mountValue := range appSpec.Mounts {
+		parts := strings.Split(mountValue, ":")
+		typeName := "emptyDir"
+		if len(parts) > 1 {
+			typeName = parts[1]
+		}
+		mountName := strings.ReplaceAll(parts[0], "/", "-")
+		if mountName[0] == '-' {
+			mountName = mountName[1:]
+		}
+		mounts = append(mounts, model.MountSpec{
+			Name: mountName,
+			Path: parts[0],
+			Type: typeName,
+		})
+	}
+
+	deployable.Mounts = mounts
 }

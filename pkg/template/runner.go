@@ -58,7 +58,9 @@ func Run(productSet *model.ProductSet, task model.Task, outputDir string) (*mode
 		}
 
 		appWorkDir := fmt.Sprintf("%s/%s/", outputDir, app.Name)
-		cerr := createDirSafely(appWorkDir)
+		appTemplatesDir := fmt.Sprintf("%s/%s/templates/", outputDir, app.Name)
+
+		cerr := createDirSafely(appTemplatesDir)
 		if cerr != nil {
 			return nil, cerr
 		}
@@ -68,7 +70,11 @@ func Run(productSet *model.ProductSet, task model.Task, outputDir string) (*mode
 			if err != nil {
 				return nil, errors.New(fmt.Sprintf("task: load-template, app: [%s], error: [%v]", app.Name, err))
 			}
-			file, er := os.Create(fmt.Sprintf("%s/%s", appWorkDir, tmpl.Name()))
+			targetDir := appTemplatesDir
+			if tName == "ChartTemplate" {
+				targetDir = appWorkDir
+			}
+			file, er := os.Create(fmt.Sprintf("%s%s", targetDir, tmpl.Name()))
 			if er != nil {
 				return nil, er
 			}
@@ -94,7 +100,10 @@ func Run(productSet *model.ProductSet, task model.Task, outputDir string) (*mode
 func GetRequiredTemplates(deployable *model.Deployable) ([]string, string) {
 	kind := ""
 	requiredTemplates := make([]string, 0)
-	requiredTemplates = append(requiredTemplates, "ServiceAccountTemplate")
+	requiredTemplates = append(requiredTemplates, "ChartTemplate")
+	if deployable.ServiceAccountName == nil {
+		requiredTemplates = append(requiredTemplates, "ServiceAccountTemplate")
+	}
 	if len(deployable.Kind) == 0 || deployable.Kind == "Deployment" {
 		requiredTemplates = append(requiredTemplates, "DeploymentTemplate")
 		kind = "deployment"

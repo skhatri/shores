@@ -6,3 +6,8 @@ env:
 mixins:
   - tools
   - default-service
+
+mounts:
+  - /tmp
+  - /var/cache/nginx:emptyDir
+  - /var/run:emptyDir
