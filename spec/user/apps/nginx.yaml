@@ -1,0 +1,8 @@
+kind: deployment
+name: nginx
+env:
+  - env-set: proxy
+
+mixins:
+  - tools
+  - default-service

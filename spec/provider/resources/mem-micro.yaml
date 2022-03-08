@@ -1,0 +1,9 @@
+kind: Resource
+metadata:
+  name: mem-micro
+spec:
+  data:
+    limits:
+      memory: 256Mi
+    requests:
+      memory: 128Mi

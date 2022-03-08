@@ -1,0 +1,9 @@
+kind: Resource
+metadata:
+  name: cpu-micro
+spec:
+  data:
+    limits:
+      cpu: 200m
+    requests:
+      cpu: 100m

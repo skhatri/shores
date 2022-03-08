@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: DataMap
+metadata:
+  name: "memory"
+spec:
+  data:
+    "m05": "0.5Gi"
+    "m1": "1Gi"
+    "m2": "2Gi"
+    "m3": "3Gi"
+    "default": "256Mi"
+

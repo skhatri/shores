@@ -1,0 +1,11 @@
+apiVersion: "v1"
+kind: DataMap
+metadata:
+  name: "cpu"
+spec:
+  data:
+    "c05": "0.5"
+    "c1": "1"
+    "c2": "2"
+    "c3": "3"
+    "default": "0.5"

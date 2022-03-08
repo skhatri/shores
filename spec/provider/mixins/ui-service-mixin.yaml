@@ -1,0 +1,10 @@
+kind: Mixin
+apiVersion: v1
+metadata:
+  name: ui-service
+spec:
+  template:
+    service:
+      port:
+        http: 3000
+      healthcheck: /api/health

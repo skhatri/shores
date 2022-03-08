@@ -1,0 +1,10 @@
+kind: Environment
+apiVersion: infra/v1
+metadata:
+  name: variables_1
+spec:
+  selector:
+    LOCATION: "hk"
+  data:
+    - name: REGION
+      value: "ap-east-1"

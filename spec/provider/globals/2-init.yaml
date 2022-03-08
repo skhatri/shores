@@ -1,0 +1,10 @@
+kind: Environment
+apiVersion: infra/v1
+metadata:
+  name: variables_2
+spec:
+  selector:
+    LOCATION: "au"
+  data:
+    - name: REGION
+      value: "ap-southeast-2"

@@ -1,0 +1,14 @@
+kind: deployment
+name: busybox
+workload:
+  target: tools
+
+env:
+  - env-set: proxy
+  - name: BUSYBOX_APP_NAME
+    value: "busybox"
+
+resources:
+  - tools
+  - micro
+

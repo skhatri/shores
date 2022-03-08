@@ -1,0 +1,16 @@
+kind: Mixin
+apiVersion: v1
+metadata:
+  name: tools
+spec:
+  template:
+    workload:
+      target: tools
+      scaling: tools
+    resources:
+      - small
+    securityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
