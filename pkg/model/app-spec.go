@@ -14,6 +14,7 @@ type AppSpec struct {
 	Mixins          []string             `json:"mixins" yaml:"mixins"`
 	Ingress         *IngressSpec         `json:"ingress" yaml:"ingress"`
 	Mounts          []string             `json:"mounts" yaml:"mounts"`
+	Args            *ArgsSpec             `json:"args" yaml:"args"`
 }
 
 type Env struct {

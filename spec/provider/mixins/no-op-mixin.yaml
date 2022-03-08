@@ -1,0 +1,12 @@
+kind: Mixin
+apiVersion: v1
+metadata:
+  name: no-op
+spec:
+  template:
+    args:
+      command:
+        - sleep 1d
+      entrypoint:
+        - /bin/sh
+        - -c

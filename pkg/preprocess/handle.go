@@ -160,6 +160,7 @@ func mergeMixins(spec *model.AppSpec, mixinsData map[string]model.MixinTemplate)
 		mixins = append(mixins, &mixinRef)
 	}
 	mixinTemplate := model.ReduceTemplates(mixins)
+
 	if mixinTemplate != nil {
 		if spec.Service == nil {
 			spec.Service = mixinTemplate.Service
@@ -179,6 +180,9 @@ func mergeMixins(spec *model.AppSpec, mixinsData map[string]model.MixinTemplate)
 		}
 		if spec.Secrets == nil {
 			spec.Secrets = mixinTemplate.Secrets
+		}
+		if spec.Args == nil {
+			spec.Args = mixinTemplate.Args
 		}
 	}
 }
@@ -230,6 +234,7 @@ func ValidateAppSpec(spec model.AppSpec,
 	updateLabelsAndAnnotations(&deploymentSpec, releaseSpec, task)
 	updateSecurityContext(&deploymentSpec, spec)
 	updateMount(&deploymentSpec, spec)
+	updateArgs(&deploymentSpec, spec)
 	return &deploymentSpec, nil
 }
 
@@ -279,6 +284,12 @@ func updateLabelsAndAnnotations(deploymentSpec *model.Deployable, releaseSpec mo
 		SelectorLabels: selectorLabels,
 	}
 
+}
+
+func updateArgs(deployable *model.Deployable, spec model.AppSpec) {
+	if spec.Args != nil {
+		deployable.Args = spec.Args
+	}
 }
 
 func updateMount(deployable *model.Deployable, appSpec model.AppSpec) {

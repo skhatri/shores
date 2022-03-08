@@ -1,17 +1,14 @@
 kind: deployment
-name: busybox
+name: todo
 workload:
   target: tools
 
 env:
   - env-set: proxy
-  - name: BUSYBOX_APP_NAME
-    value: "busybox"
 
 resources:
   - small
-  - micro
 
 mixins:
-  - no-op
   - tools
+  - small-java-app

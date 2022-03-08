@@ -21,12 +21,13 @@ func main() {
 		User:      os.Getenv("USER"),
 		Created:   now.Format(time.RFC3339),
 		ChangeRef: "CRQ000019921",
+		Output:    "../shores-helm/charts",
 	}
 	productSet, err := model.NewProductSetFromFile(release, "default")
 	if err != nil {
 		log.Fatalf("error processing product set file: %v", err)
 	}
-	dSummary, tErr := templates.Run(productSet, task, "./out")
+	dSummary, tErr := templates.Run(productSet, task)
 	if tErr != nil {
 		log.Fatalf("error running template: %v", tErr)
 	}

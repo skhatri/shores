@@ -67,4 +67,5 @@ type Task struct {
 	Command   string `json:"command" yaml:"command"`
 	Created   string `json:"created" yaml:"created"`
 	ChangeRef string `json:"changeRef" yaml:"changeRef"`
+	Output    string `json:"output" yaml:"output"`
 }

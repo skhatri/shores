@@ -7,6 +7,7 @@ type MixinTemplate struct {
 	Workload        *WorkloadSpec        `json:"workload,omitempty" yaml:"workload,omitempty"`
 	Resources       []*string            `json:"resources,omitempty" yaml:"resources,omitempty"`
 	SecurityContext *SecurityContextSpec `json:"securityContext,omitempty" yaml:"securityContext,omitempty"`
+	Args            *ArgsSpec             `json:"args,omitempty" yaml:"args,omitempty"`
 }
 
 func (mx *MixinTemplate) Merge(other *MixinTemplate) *MixinTemplate {
@@ -54,6 +55,14 @@ func (mx *MixinTemplate) Merge(other *MixinTemplate) *MixinTemplate {
 	if theirSecurityContext != nil {
 		newTemplate.SecurityContext = theirSecurityContext
 	}
+
+	myArgs := mx.Args
+	theirArgs := other.Args
+	newTemplate.Args = myArgs
+	if theirArgs != nil {
+		newTemplate.Args = theirArgs
+	}
+
 
 	sidecarMapping := make(map[string]*SidecarSpec, 0)
 	mySidecars := mx.Sidecar

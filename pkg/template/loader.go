@@ -83,8 +83,12 @@ spec:
         - name: {{ .Artifact.Name }}
           image: {{ .Artifact.Image }}
           imagePullPolicy: IfNotPresent
-          {{- if .Runtime.Entrypoint }}command: [{{ range $entry := .Runtime.Entrypoint }}'{{$entry}}', {{ end }}]{{- end }}
-          {{- if .Runtime.Command }}args: [{{ range $cmd := .Runtime.Command }}'{{$cmd}}', {{ end }}]{{- end }}
+{{ if .Args }}
+          {{ if .Args.Entrypoint }}command:{{ range $entry := .Args.Entrypoint }} 
+            - '{{$entry}}'{{ end }}{{ end }}
+          {{ if .Args.Command }}args:{{ range $cmd := .Args.Command }}
+            - '{{$cmd}}'{{ end }} {{ end }}
+{{ end }}
           {{ if .ServiceEnabled }}ports:{{ range $port := .Ports }}
             - name: {{ $port.Name }}
               containerPort: {{ $port.Port }}

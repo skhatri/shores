@@ -17,12 +17,12 @@ type Deployable struct {
 	Service            []ServiceInfo        `json:"service"`
 	Metadata           Metadata             `json:"metadata"`
 	ServiceAccountName *string              `json:"serviceAccountName"`
-	Runtime            RuntimeArgs          `json:"runtime"`
 	ServiceEnabled     bool                 `json:"serviceEnabled"`
 	Resources          *Resources           `json:"resources"`
 	SecurityContext    *SecurityContextSpec `json:"securityContext"`
 	Ingress            *IngressSpec         `json:"ingress"`
 	Mounts             []MountSpec          `json:"mounts"`
+	Args               *ArgsSpec            `json:"args"`
 }
 
 func (d *Deployable) Ports() []PortType {
@@ -100,11 +100,6 @@ type TargetInfo struct {
 	NodeSelector map[string]string `json:"nodeSelector"`
 }
 
-type RuntimeArgs struct {
-	Entrypoint string   `json:"entrypoint"`
-	Command    []string `json:"command"`
-}
-
 type Resources struct {
 	Requests *ResourceValue `json:"requests"`
 	Limits   *ResourceValue `json:"limits"`
@@ -119,4 +114,9 @@ type MountSpec struct {
 	Name string `json:"name"`
 	Path string `json:"path"`
 	Type string `json:"type"`
+}
+
+type ArgsSpec struct {
+	Entrypoint []*string  `json:"entrypoint"`
+	Command    []*string `json:"command"`
 }

@@ -4,3 +4,5 @@ apps:
     version: "1.35.0"
   - name: "nginx"
     version: "1.21.6"
+  - name: "todo"
+    image: "skhatri/todo:0.1"

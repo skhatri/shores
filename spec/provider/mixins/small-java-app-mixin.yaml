@@ -1,0 +1,23 @@
+kind: Mixin
+apiVersion: v1
+metadata:
+  name: small-java-app
+spec:
+  template:
+    service:
+      port:
+        http: 8080
+      healthcheck: /readiness
+    workload:
+      target: tools
+      scaling: tools
+    resources:
+      - small
+    securityContext:
+      runAsUser: 1000
+      runAsNonRoot: true
+      readOnlyRootFilesystem: true
+      allowPrivilegeEscalation: false
+    env:
+      - name: JAVA_OPTS
+        value: "-Xms256m -Xmx256m -Dlog4j.configurationFile=/opt/app/log/log4j2.xml"

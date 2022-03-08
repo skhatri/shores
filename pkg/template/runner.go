@@ -27,7 +27,7 @@ func createDirSafely(fileName string) error {
 	return nil
 }
 
-func Run(productSet *model.ProductSet, task model.Task, outputDir string) (*model.DeploymentSummary, error) {
+func Run(productSet *model.ProductSet, task model.Task) (*model.DeploymentSummary, error) {
 
 	globalEnvData := glb.LoadVars(functions.ListFiles("spec/provider/globals", ".yaml"))
 	envData := glb.LoadVarsWithSubstitution(functions.ListFiles("spec/provider/env-sets", ".yaml"), globalEnvData)
@@ -56,7 +56,7 @@ func Run(productSet *model.ProductSet, task model.Task, outputDir string) (*mode
 			}
 			fmt.Println(string(b))
 		}
-
+		outputDir := task.Output
 		appWorkDir := fmt.Sprintf("%s/%s/", outputDir, app.Name)
 		appTemplatesDir := fmt.Sprintf("%s/%s/templates/", outputDir, app.Name)
 
